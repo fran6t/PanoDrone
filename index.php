@@ -31,7 +31,7 @@
 	</div>
 
 	<footer>
-        <a class="tz" href="http://tutorialzine.com/2014/09/cute-file-browser-jquery-ajax-php/">Cute File Browser with jQuery, AJAX and PHP</a>
+        <div class="namefile">Crédits: <a href="http://tutorialzine.com/2014/09/cute-file-browser-jquery-ajax-php/">Cute File Browser with jQuery, AJAX and PHP</a> & <a href="https://photo-sphere-viewer.js.org/">Photo Sphere Viewer</div></a>
         <div id="tzine-actions"></div>
         <span class="close"></span>
     </footer>
