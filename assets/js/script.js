@@ -296,6 +296,7 @@ $(function(){
 
 					var itemsLength = f.items.length,
 						name = escapeHTML(f.name),
+						titre = escapeHTML(f.titre),
 						icon = '<span class="icon folder"></span>';
 
 					if(itemsLength) {
@@ -324,14 +325,19 @@ $(function(){
 
 					var fileSize = bytesToSize(f.size),
 						name = escapeHTML(f.name),
+						titre = escapeHTML(f.titre),
 						fileType = name.split('.'),
 						icon = '<span class="icon file"></span>';
 
 					fileType = fileType[fileType.length-1];
 
-					icon = '<span class="icon file f-'+fileType+'">.'+fileType+'</span>';
+					// Je vire l'icone file
+					// icon = '<span class="icon file f-'+fileType+'">.'+fileType+'</span>';
+					icon = '';
 
-					var file = $('<li class="files"><a href="'+ f.path+'" title="'+ f.path +'" class="files">'+icon+'<span class="name">'+ name +'</span> <span class="details">'+fileSize+'</span></a></li>');
+					// Je vire l'info de la taille
+					// var file = $('<li class="files"><a href=pano.php?p='+ encodeURIComponent(f.path) +' title="'+ f.titre +'" class="files">'+icon+'<span class="name">'+ f.titre +'</span> <span class="details">'+fileSize+'</span></a></li>');
+					var file = $('<li class="files"><div class="namefile"><a href="pano.php?p='+ encodeURIComponent(f.path) +'" title="'+ f.titre +'">'+icon + f.titre +'</a></div><hr /><div class="detailsfile">' + f.legende + '</div></li>');
 					file.appendTo(fileList);
 				});
 

@@ -551,3 +551,25 @@ footer #tzine-actions iframe{
 @media (max-width: 1024px) {
 	#bsaHolder, footer{ display:none;}
 }
+
+
+.namefile{
+	position: relative;
+	top:5px;
+	/* border: solid; */
+	height:40px;
+}
+
+.namefile a{
+	color: #ffffff;
+	font-size: 15px;
+	font-weight: 700;
+	text-decoration: none;
+}
+.detailsfile{
+	width: 100%; 
+	height: 70px;
+	padding-top:5px; 
+	color: #b6c1c9;
+	/* border: solid; */
+}
