@@ -20,4 +20,7 @@ Un hergement web supportant php
 
 Pas de base de données les infos persistantes sont mémorisées dans un fichier .xml  
 
-La fonction de scan des fichiers sphères, l'ecriture la lecture des fichiers .xml sont en php le reste en jacascript. 
+La fonction de scan des fichiers sphères, l'ecriture la lecture des fichiers .xml sont en php le reste en javascript.
+
+__Reste à faire__:
+Sécuriser gestion .xml, améliorer la création d'un marqueur en automatisant le .xml  
