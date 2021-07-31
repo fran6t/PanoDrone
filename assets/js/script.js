@@ -241,7 +241,7 @@ $(function(){
 					}
 				}
 				else if(d.type === 'file') {
-					if(d.name.toLowerCase().match(searchTerms)) {
+					if(d.name.toLowerCase().match(searchTerms) || d.titre.toLowerCase().match(searchTerms) || d.legende.toLowerCase().match(searchTerms) ) {
 						files.push(d);
 					}
 				}
