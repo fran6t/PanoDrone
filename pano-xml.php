@@ -11,12 +11,12 @@ if (isset($_POST["v"])){
 	$fic_complement = str_replace(".jpg",".xml",$quelfic);
 	$xml="<?xml version=\"1.0\" standalone=\"yes\"?>\n";
 	$xml.="<pano>\n";
-  $xml.="<titre>\n";
+  $xml.="<titre><![CDATA[";
   $xml.= htmlentities($_POST['titre']);
-  $xml.="</titre>\n";
-	$xml.="<legende>\n";
+  $xml.="]]></titre>\n";
+	$xml.="<legende><![CDATA[";
 	$xml.=htmlentities(rtrim($_POST['legende']));
-  $xml.="</legende>\n";
+  $xml.="]]></legende>\n";
   $xml.=$_POST['contenu'];
 	$xml.="</pano>\n";
 	file_put_contents($fic_complement, $xml);
