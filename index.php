@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-	<title>Cute file browser</title>
+	<title>PanoDrone</title>
 
 
 	<!-- Include our stylesheet -->
@@ -37,7 +37,7 @@
     </footer>
 
 	<!-- Include our script files -->
-	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script src="assets/js/jquery-1.11.0.min.js"></script>
 	<script src="assets/js/script.js"></script>
 
 </body>
