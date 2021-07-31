@@ -1,7 +1,4 @@
 <?php
-$ou="Mes-Pano/";
-//$quelfic = $ou."JL-pano.jpg";
-//$queltit = "Au dessus de chez Sandrine & Jean-Luc";	
 if (!isset($_GET["p"])){
 	echo "Parametres manquants !!!!";
 	return;
@@ -26,7 +23,7 @@ $fic_complement = str_replace(".jpg",".xml",$quelfic);
 if (file_exists($fic_complement)){
 	$xml = simplexml_load_file($fic_complement);
 	$titre=$xml->titre;
-  $legende=$xml->legende;
+  $legende=html_entity_decode($xml->legende);
   // Calcul nombre de marqueur
   $p_cnt = count($xml->marker);
   // On construit le tableau javascript des marqueurs

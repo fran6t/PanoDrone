@@ -1,5 +1,6 @@
 <?php
 
+
 $p_cnt = 0;     //Nombre de marqueurs
 $jmarqueur="";  //A peupler pour javascript
 $contenu="";
@@ -10,11 +11,11 @@ if (isset($_POST["v"])){
 	$fic_complement = str_replace(".jpg",".xml",$quelfic);
 	$xml="<?xml version=\"1.0\" standalone=\"yes\"?>\n";
 	$xml.="<pano>\n";
-	$xml.="<titre>";
-	$xml.=rtrim($_POST['titre']);
-	$xml.="</titre>\n";
+  $xml.="<titre>\n";
+  $xml.= htmlentities($_POST['titre']);
+  $xml.="</titre>\n";
 	$xml.="<legende>\n";
-	$xml.=rtrim($_POST['legende']);
+	$xml.=htmlentities(rtrim($_POST['legende']));
   $xml.="</legende>\n";
   $xml.=$_POST['contenu'];
 	$xml.="</pano>\n";
@@ -29,8 +30,8 @@ if (!isset($quelfic)) $quelfic = stripSlashes($_GET["p"]);
 $fic_complement = str_replace(".jpg",".xml",$quelfic);
 if (file_exists($fic_complement)){
 	$xml = simplexml_load_file($fic_complement);
-	$titre=$xml->titre;
-  $legende=$xml->legende;
+	$titre=html_entity_decode($xml->titre);
+  $legende=html_entity_decode($xml->legende);
   // Calcul nombre de marqueur
   $p_cnt = count($xml->marker);
   // On construit le tableau javascript des marqueurs
@@ -50,11 +51,11 @@ if (file_exists($fic_complement)){
     $jmarqueur.="\t anchor   : 'bottom center',\n";
     $jmarqueur.="});\n";
     $contenu.="<marker>\n";
-		$contenu.="<titre>".$xml->marker[$i]->titre."</titre>\n";
+		$contenu.="<titre>".html_entity_decode($xml->marker[$i]->titre)."</titre>\n";
 		$contenu.="<couleur>".$xml->marker[$i]->couleur."</couleur>\n";
 		$contenu.="<latitude>".$xml->marker[$i]->latitude."</latitude>\n";
 		$contenu.="<longitude>".$xml->marker[$i]->longitude."</longitude>\n";
-		$contenu.="<descmarqueur>".$xml->marker[$i]->descmarqueur."</descmarqueur>\n";
+		$contenu.="<descmarqueur><![CDATA[".$xml->marker[$i]->descmarqueur."]]></descmarqueur>\n";
 		$contenu.="</marker>\n";
   }
 }
@@ -116,14 +117,14 @@ if (file_exists($fic_complement)){
     <textarea name="legende" id="legende" rows="5" cols="50" wrap="soft"><?php echo $legende; ?></textarea><br />
     <hr />
     <h2>XML Marqueurs</h2>
-    <textarea name="contenu" id="contenu" rows="10" cols="50" wrap="soft"><?php echo $contenu; ?></textarea><br />
+    <textarea name="contenu" id="contenu" rows="15" cols="50" wrap="soft"><?php echo $contenu; ?></textarea><br />
 <xmp>
 <marker>
 <titre>...</titre>
 <couleur>red ou blue</couleur>
 <latitude>...</latitude>
 <longitude>...</longitude>
-<descmarqueur>...</descmarqueur>
+<descmarqueur><![CDATA[...]]></descmarqueur>
 </marker>
 </xmp>
     <input type="submit" name="submit" id="submit" value="Valider" />
