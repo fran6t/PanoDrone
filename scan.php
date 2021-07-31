@@ -1,6 +1,6 @@
 <?php
 
-$dir = "files";
+$dir = "Spheres";
 
 // Run the recursive function 
 
@@ -60,7 +60,7 @@ function scan($dir){
 header('Content-type: application/json');
 
 echo json_encode(array(
-	"name" => "files",
+	"name" => $dir,
 	"type" => "folder",
 	"path" => $dir,
 	"items" => $response
