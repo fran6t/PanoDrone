@@ -16,5 +16,8 @@ Cute File Browser est légérement modifié, il scan les fichiers .jpg, si un fi
 Photo Sphère Viewer est utilisé soit pour visualiser les sphères ainsi que les points d'intérêts soit pour créer ou mettre à jour ces derniers. Pour ce faire il recupére ou écrit les infos marqueurs dans le fichier .xml  
 
 ## Pré-requis :
-Un hergement web supportant php (Pas de base de données les infos persistantes sont mémorisées dans fichier .xml)  
+Un hergement web supportant php  
+
+Pas de base de données les infos persistantes sont mémorisées dans un fichier .xml  
+
 La fonction de scan des fichiers sphères, l'ecriture la lecture des fichiers .xml sont en php le reste en jacascript. 
