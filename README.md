@@ -24,3 +24,6 @@ La fonction de scan des fichiers sphères, l'ecriture la lecture des fichiers .x
 
 __Reste à faire__:
 Sécuriser gestion .xml, améliorer la création d'un marqueur en automatisant le .xml  
+
+## Démo ##
+[Démonstration](http://www.wse.fr/PanoDrone/)
