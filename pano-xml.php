@@ -211,50 +211,6 @@ while ($row = $result->fetchArray()) {
     </fieldset>
   </form>
 
-<!--
-
-  <form action="pano-xml.php" method="post" class="form-example"> 
-    <input type="submit" name="submit" id="submit" value="Valider" /> <a href="index.php?a=admin">Retour</a><br />
-    <input id="p" name="p" type="hidden" value="<?php echo $quelfic; ?>">
-    <input id="v" name="v" type="hidden" value="ok">
-    <label for="titre">Titre (Pour la liste des sphères</label><br />
-    <input type="text" name="titre" id="titre" size="50" maxlength="250" value="<?php echo $titre; ?>" /><br />
-    <label for="id_Legende">Legende (Pour la liste des sphères):</label><br />
-    <textarea name="legende" id="legende" rows="3" cols="50" wrap="soft"><?php echo $legende; ?></textarea><br />
-    <hr />
-    <?php
-    for ($i = 1; $i <= $nb_marqueur; $i++) {
-      echo "<h2>Marqueurs".$i."</h2>";
-      ?>
-      <label for="titre">Titre Marqueur</label><input type="text" name="formu[<?php echo $i; ?>][nom_marqueur]" id="nom_marqueur<?php echo $i; ?>" size="50" maxlength="250" value="<?php echo $nom_marqueur[$i]; ?>" /><br />
-      <label for="titre">Couleur</label><select name="formu[<?php echo $i; ?>][couleur]"" id="couleur_<?php echo $i; ?>">
-                                          <option value="red"  <?php if ($couleur[$i]=="red") echo "SELECTED"; ?>>Rouge</option>
-                                          <option value="blue" <?php if ($couleur[$i]=="blue") echo "SELECTED"; ?>>Bleu</option>
-                                        </select><br />
-      <label for="titre">Latitude :</label><input type="text" name="formu[<?php echo $i; ?>][latitude]"     id="latitude_<?php echo $i; ?>" size="10" maxlength="250" value="<?php echo $latitude[$i]; ?>" /><br />
-      <label for="titre">Longitude :</label><input type="text" name="formu[<?php echo $i; ?>][longitude]"    id="longitude_<?php echo $i; ?>" size="10"longitudeength="250" value="<?php echo $longitude[$i]; ?>" /><br />
-      <label for="titre">Description</label><textarea name="formu[<?php echo $i; ?>][descri]"           id="descri_<?php echo $i; ?>" rows="15" cols="50" wrap="soft"><?php echo $descri[$i]; ?></textarea><br />
-    <?  
-    }
-    //$i = $i +1;
-    echo "<h2>Marqueurs ".$i."</h2>";
-    // On presente pour un marqueur supplémentaire
-    ?>
-    <label for="titre">Titre Marqueur</label><input type="text" name="formu[<?php echo $i; ?>][nom_marqueur]" id="nom_marqueur_<?php echo $i; ?>" size="50" maxlength="250" value="" /><br />
-    <label for="titre">Couleur</label><select name="formu[<?php echo $i; ?>][couleur]"" id="couleur_<?php echo $i; ?>">
-                                          <option value="red">Rouge</option>
-                                          <option value="blue">Bleu</option>
-                                        </select><br />
-    <?php
-    $name_latitude = "formu[".$i."][latitude]";
-    $name_longitude = "formu[".$i."][longitude]";
-    ?>
-    <label for="titre">Latitude</label><input type="text" name="<?php echo $name_latitude; ?>"     id="<?php echo $name_latitude; ?>" size="50" maxlength="250" value="" /><br />
-    <label for="titre">Longitude</label><input type="text" name="<?php echo $name_longitude; ?>"    id="<?php echo $name_longitude; ?>" size="50"longitudeength="250" value="" /><br />
-    <label for="titre">Description</label><textarea name="formu[<?php echo $i; ?>][descri]"           id="descri_<?php echo $i; ?>" rows="15" cols="50" wrap="soft"></textarea><br />
-    <input type="submit" name="submit" id="submit" value="Valider" />
-  </form>
-  -->
 </div> 
 <script src="node_modules/three/build/three.js"></script>
 <script src="node_modules/promise-polyfill/dist/polyfill.js"></script>
