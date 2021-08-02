@@ -149,62 +149,6 @@ for($inner = 1; $inner <= $nb_marqueur; $inner++) {
       }]
     ]
   });
-
-  var markers = PSV.getPlugin(PhotoSphereViewer.MarkersPlugin);
-
-  PSV.on('click', function (e, data) {
-    if (!data.rightclick) {
-      markers.addMarker({
-        id       : '#' + Math.random(),
-        tooltip  : 'Generated marker',
-        longitude: data.longitude,
-        latitude : data.latitude,
-        image    : 'example/assets/pin-red.png',
-        width    : 32,
-        height   : 32,
-        anchor   : 'bottom center',
-        data     : {
-          deletable: true,
-        },
-      });
-      console.log('latitude:',data.latitude,'longitude:',data.longitude);
-    }
-  });
-
-  markers.on('select-marker', function (e, marker, data) {
-    console.log('select', marker.id);
-    if (marker.data && marker.data.deletable) {
-      if (data.dblclick) {
-        markers.removeMarker(marker);
-      }
-      else if (data.rightclick) {
-        markers.updateMarker({
-          id   : marker.id,
-          image: 'example/assets/pin-blue.png',
-        });
-      }
-    }
-  });
-
-  markers.on('unselect-marker', function (e, marker) {
-    console.log('unselect', marker.id);
-  });
-
-  markers.on('over-marker', function (e, marker) {
-    console.log('over', marker.id);
-  });
-
-  markers.on('leave-marker', function (e, marker) {
-    console.log('leave', marker.id);
-  });
-
-  markers.on('select-marker-list', function (e, marker) {
-    console.log('select-list', marker.id);
-  });
-
-  markers.on('goto-marker-done', function (e, marker) {
-    console.log('goto-done', marker.id);
-  });
 </script>
 </body>
 </html>
