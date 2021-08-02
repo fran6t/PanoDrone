@@ -12,18 +12,20 @@ Pour ce faire, deux logiciels sont utilisés :
 
 Cute File Browser permet de se déplacer dans l'arborescence des photos sphères, puis lors du clique sur la tuile info de la photosphère on passe la main à Photo Sphères View qui permet alors de naviguer visuellement dans la sphère et afficher les marqueurs.  
 
-Cute File Browser est légérement modifié, il scan les fichiers .jpg, si un fichier .xml du même nom est présent il se servira alors du champs titre et du champs legende pour afficher cela sur la tuile de présentation de la sphère.  
-Photo Sphère Viewer est utilisé soit pour visualiser les sphères ainsi que les points d'intérêts soit pour créer ou mettre à jour ces derniers. Pour ce faire il recupére ou écrit les infos marqueurs dans le fichier .xml  
+Cute File Browser est légérement modifié, il scan les fichiers .jpg, puis insert le nom du fichier dans une base de donnée sqlite qui sera alors enrichie pour donner un titre et des infos de marqueurs.  
+Photo Sphère Viewer est utilisé soit pour visualiser les sphères ainsi que les points d'intérêts soit pour créer ou mettre à jour ces derniers. Pour ce faire il recupére ou écrit les infos marqueurs dans la base de données.
+
+Dans la première version, il n'y avait pas de base de données, les infos étaient mémorisées dans un fichier .xml du même nom, à l'usage il s'est avéré difficile d'ajouter des marqueurs multiples dans une sphère d'où l'abandon de ce choix. 
 
 ## Pré-requis :
 Un hergement web supportant php  
 
-Pas de base de données les infos persistantes sont mémorisées dans un fichier .xml  
+Base de données sqlite3 pour mémoriser les infos persistantes.
 
-La fonction de scan des fichiers sphères, l'ecriture la lecture des fichiers .xml sont en php le reste en javascript.
+La fonction de scan des fichiers sphères est en php le reste en javascript.
 
 __Reste à faire__:
-Sécuriser gestion .xml, améliorer la création d'un marqueur en automatisant le .xml  
+Améliorer la création d'un marqueur  
 
 ## Démo ##
 [Démonstration](http://www.wse.fr/PanoDrone/)

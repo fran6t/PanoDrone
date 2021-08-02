@@ -1,15 +1,13 @@
 <?php
+
+$mabdd = "pano.db";
+$db = new SQLite3($mabdd);
+
 if (!isset($_GET["p"])){
 	echo "Parametres manquants !!!!";
 	return;
 }
 $quelfic = urldecode($_GET["p"]);	
-
-if (isset($_GET["t"])){
-	$queltit =  urldecode($_GET["t"]);	
-} else {
-	$queltit = "Mes sphères <b>&copy; Fran6t</b>";
-}
 
 // On test si le fichier existe 
 if (!file_exists($quelfic)){
@@ -17,39 +15,46 @@ if (!file_exists($quelfic)){
 	echo "Pano manquants !!!!";
 	return;
 }
+
 $titre=$legende=$titrerouge=$latituderouge=$descmarqueurrouge=$titrebleu=$latitudebleu=$descmarqueurbleu="";
-// On recupere les elements eventuel pour les marqueur
-$fic_complement = str_replace(".jpg",".xml",$quelfic);
-if (file_exists($fic_complement)){
-	$xml = simplexml_load_file($fic_complement);
-	$titre=$xml->titre;
-  $legende=html_entity_decode($xml->legende);
-  // Calcul nombre de marqueur
-  $p_cnt = count($xml->marker);
-  // On construit le tableau javascript des marqueurs
-  for($i = 0; $i < $p_cnt; $i++) {
-    $jmarqueur.="a.push({\n";
-    $jmarqueur.="\t id       : 'Marker".$i."',\n";
-    $jmarqueur.="\t tooltip  : {\n";
-    $jmarqueur.="\t\t content : '".addslashes($xml->marker[$i]->titre)."',\n";
-    $jmarqueur.="\t\t position: 'bottom right',\n";
-    $jmarqueur.="\t },\n";
-    $jmarqueur.="\t content  : document.getElementById('pin-".$i."').innerHTML,\n";
-    $jmarqueur.="\t latitude : ".$xml->marker[$i]->latitude.",\n";
-    $jmarqueur.="\t longitude: ".$xml->marker[$i]->longitude.",\n";
-    $jmarqueur.="\t image    : 'example/assets/pin-".$xml->marker[$i]->couleur.".png',\n";
-    $jmarqueur.="\t width    : 32,\n";
-    $jmarqueur.="\t height   : 32,\n";
-    $jmarqueur.="\t anchor   : 'bottom center',\n";
-    $jmarqueur.="});\n";
-    $contenu.="<marker>\n";
-		$contenu.="<titre>".$xml->marker[$i]->titre."</titre>\n";
-		$contenu.="<couleur>".$xml->marker[$i]->couleur."</couleur>\n";
-		$contenu.="<latitude>".$xml->marker[$i]->latitude."</latitude>\n";
-		$contenu.="<longitude>".$xml->marker[$i]->longitude."</longitude>\n";
-		$contenu.="<descmarqueur>".$xml->marker[$i]->descmarqueur."</descmarqueur>\n";
-		$contenu.="</marker>\n";
-  }
+$statement = $db->prepare('SELECT titre,legende FROM lespanos WHERE fichier = :fichier LIMIT 1;');
+$statement->bindValue(':fichier', $quelfic);
+$result = $statement->execute();
+$row=$result->fetchArray(SQLITE3_ASSOC);
+
+while ($row = $result->fetchArray()) {
+  $titre = $row['titre'];
+  $legende = $row['legende'];
+}
+
+// On memorise les marqueurs pour le formulaire et aussi pour l'affichage
+$statement = $db->prepare('SELECT * FROM lespanos_details WHERE fichier = :fichier;');
+$statement->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
+$result = $statement->execute();
+$nb_marqueur = $i = 0;
+while ($row = $result->fetchArray()) {
+  $i = $i +1;
+  $nb_marqueur = $i;
+  $nom_marqueur[$nb_marqueur] = $row['nom_marqueur'];
+  $couleur[$nb_marqueur] = $row['couleur'];
+  $latitude[$nb_marqueur] = $row['latitude'];
+  $longitude[$nb_marqueur] = $row['longitude'];
+  $descri[$nb_marqueur] = $row['descri'];
+  // On construit le tableau des marqueurs javascript
+  $jmarqueur.="a.push({\n";
+  $jmarqueur.="\t id       : 'Marker".$nb_marqueur."',\n";
+  $jmarqueur.="\t tooltip  : {\n";
+  $jmarqueur.="\t\t content : '".$row['nom_marqueur']."',\n";
+  $jmarqueur.="\t\t position: 'bottom right',\n";
+  $jmarqueur.="\t },\n";
+  $jmarqueur.="\t content  : document.getElementById('pin-".$nb_marqueur."').innerHTML,\n";
+  $jmarqueur.="\t latitude : ".$row['latitude'].",\n";
+  $jmarqueur.="\t longitude: ".$row['longitude'].",\n";
+  $jmarqueur.="\t image    : 'example/assets/pin-".$row['couleur'].".png',\n";
+  $jmarqueur.="\t width    : 32,\n";
+  $jmarqueur.="\t height   : 32,\n";
+  $jmarqueur.="\t anchor   : 'bottom center',\n";
+  $jmarqueur.="});\n";
 }
 ?>
 <!DOCTYPE html>
@@ -107,9 +112,9 @@ if (file_exists($fic_complement)){
 
 <!-- text used for the marker description -->
 <?php
-for($i = 0; $i < $p_cnt; $i++) {
-  echo "<script type=\"text/template\" id=\"pin-".$i."\">\n";
-  echo $xml->marker[$i]->descmarqueur."\n";
+for($inner = 1; $inner <= $nb_marqueur; $inner++) {
+  echo "<script type=\"text/template\" id=\"pin-".$inner."\">\n";
+  echo $descri[$inner]."\n";
   echo "</script>\n";
 }
 ?>
@@ -117,8 +122,6 @@ for($i = 0; $i < $p_cnt; $i++) {
 <script>
   const PSV = new PhotoSphereViewer.Viewer({
     container : 'photosphere',
-    //panorama  : '../Panos/Lorient-pano.jpg',
-    //caption   : 'Parc national du Mercantour <b>&copy; Damien Sorel</b>',
     panorama   : '<?php echo $quelfic; ?>',
     caption    : '<?php echo $queltit; ?>',
     loadingImg: 'example/assets/photosphere-logo.gif',

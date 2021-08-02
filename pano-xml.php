@@ -1,64 +1,97 @@
 <?php
 
+$mabdd = "pano.db";
+$db = new SQLite3($mabdd);
 
 $p_cnt = 0;     //Nombre de marqueurs
 $jmarqueur="";  //A peupler pour javascript
 $contenu="";
 
+if (!isset($quelfic)) $quelfic = stripSlashes($_GET["p"]);
+
 // Si nous arrivons du formulaire
 if (isset($_POST["v"])){
-	$quelfic = stripSlashes($_POST["p"]);
-	$fic_complement = str_replace(".jpg",".xml",$quelfic);
-	$xml="<?xml version=\"1.0\" standalone=\"yes\"?>\n";
-	$xml.="<pano>\n";
-  $xml.="<titre><![CDATA[";
-  $xml.= htmlentities($_POST['titre']);
-  $xml.="]]></titre>\n";
-	$xml.="<legende><![CDATA[";
-	$xml.=htmlentities(rtrim($_POST['legende']));
-  $xml.="]]></legende>\n";
-  $xml.=$_POST['contenu'];
-	$xml.="</pano>\n";
-	file_put_contents($fic_complement, $xml);
-	$msg = "Enregistrement effectué";
-	//echo $fic_complement;
-}	
+  $quelfic = stripSlashes($_POST["p"]);
+  //echo "UPDATE lespanos SET titre = ".$_POST['titre']." , legende = ".$_POST['legende']." WHERE fichier = ".$quelfic.";";
+  $stmt = $db->prepare('UPDATE lespanos SET titre = :titre , legende = :legende WHERE fichier = :fichier');
+  $stmt->bindValue(':titre', rtrim($_POST['titre']), SQLITE3_TEXT);
+  $stmt->bindValue(':legende', rtrim($_POST['legende']), SQLITE3_TEXT);
+  $stmt->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
+  $result = $stmt->execute();
 
-if (!isset($quelfic)) $quelfic = stripSlashes($_GET["p"]);	
+  // On commence par effacer tous les marqueurs de cette sphère
+  $stmt = $db->prepare('DELETE FROM lespanos_details WHERE fichier = :fichier');
+  $stmt->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
+  $result = $stmt->execute();
+
+  // On insere maintenant les marqueurs du formulaire
+  // On calcul combien de marqueur sont dans le formulaire
+  //echo "<br />Nombre de formulaire = ".count($_POST['formu']);
+  //echo "<br />";
+  //var_dump($_POST['formu']);
+  //echo "<br />";
+  for ($a = 1; $a <= count($_POST['formu']); $a++){
+    if (rtrim($_POST['formu'][$a]['nom_marqueur'])!=""){   //On insert que si un titre de marqueur est renseigné 
+      $statement = $db->prepare('INSERT INTO lespanos_details (fichier, nom_marqueur, couleur, latitude, longitude, descri) VALUES (:fichier, :nom_marqueur, :couleur, :latitude, :longitude, :descri);');
+	    $statement->bindValue(':fichier', $quelfic);
+      $statement->bindValue(':nom_marqueur', $_POST['formu'][$a]['nom_marqueur']);
+      $statement->bindValue(':couleur', $_POST['formu'][$a]['couleur']);
+      $statement->bindValue(':latitude', $_POST['formu'][$a]['latitude']);
+      $statement->bindValue(':longitude', $_POST['formu'][$a]['longitude']);
+      $statement->bindValue(':descri', $_POST['formu'][$a]['descri']);
+	    $result = $statement->execute();
+      //echo "<br /><br />a=".$a." Marqueur=".$_POST['formu'][$a]['nom_marqueur']."<br /><br />";
+      //echo "<br /><br />a=".$a." Couleur=".$_POST['formu'][$a]['couleur']."<br /><br />";
+      //echo "<br /><br />a=".$a." Longitude=".$_POST['formu'][$a]['longitude']."<br /><br />";
+      //echo "<br /><br />a=".$a." Latitude=".$_POST['formu'][$a]['latitude']."<br /><br />";
+      //echo "<br /><br />a=".$a." Description=".$_POST['formu'][$a]['descri']."<br /><br />";
+    }
+  }
+
+}		
 
 // On recupere les elements eventuel pour les marqueur
-$fic_complement = str_replace(".jpg",".xml",$quelfic);
-if (file_exists($fic_complement)){
-	$xml = simplexml_load_file($fic_complement);
-	$titre=html_entity_decode($xml->titre);
-  $legende=html_entity_decode($xml->legende);
-  // Calcul nombre de marqueur
-  $p_cnt = count($xml->marker);
-  // On construit le tableau javascript des marqueurs
-  for($i = 0; $i < $p_cnt; $i++) {
-    $jmarqueur.="a.push({\n";
-    $jmarqueur.="\t id       : 'Marker".$i."',\n";
-    $jmarqueur.="\t tooltip  : {\n";
-    $jmarqueur.="\t\t content : '".addslashes($xml->marker[$i]->titre)."',\n";
-    $jmarqueur.="\t\t position: 'bottom right',\n";
-    $jmarqueur.="\t },\n";
-    $jmarqueur.="\t content  : document.getElementById('pin-".$i."').innerHTML,\n";
-    $jmarqueur.="\t latitude : ".$xml->marker[$i]->latitude.",\n";
-    $jmarqueur.="\t longitude: ".$xml->marker[$i]->longitude.",\n";
-    $jmarqueur.="\t image    : 'example/assets/pin-".$xml->marker[$i]->couleur.".png',\n";
-    $jmarqueur.="\t width    : 32,\n";
-    $jmarqueur.="\t height   : 32,\n";
-    $jmarqueur.="\t anchor   : 'bottom center',\n";
-    $jmarqueur.="});\n";
-    $contenu.="<marker>\n";
-		$contenu.="<titre>".html_entity_decode($xml->marker[$i]->titre)."</titre>\n";
-		$contenu.="<couleur>".$xml->marker[$i]->couleur."</couleur>\n";
-		$contenu.="<latitude>".$xml->marker[$i]->latitude."</latitude>\n";
-		$contenu.="<longitude>".$xml->marker[$i]->longitude."</longitude>\n";
-		$contenu.="<descmarqueur><![CDATA[".$xml->marker[$i]->descmarqueur."]]></descmarqueur>\n";
-		$contenu.="</marker>\n";
-  }
+//echo "<br />SELECT titre,legende FROM lespanos WHERE fichier = ".$quelfic." LIMIT 1";
+$statement = $db->prepare('SELECT titre,legende FROM lespanos WHERE fichier = :fichier LIMIT 1;');
+$statement->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
+$result = $statement->execute();
+$titre=$legende="";
+while ($row = $result->fetchArray()) {
+  $titre = $row['titre'];
+  $legende = $row['legende'];
 }
+
+// On memorise les marqueurs pour le formulaire et aussi pour l'affichage
+$statement = $db->prepare('SELECT * FROM lespanos_details WHERE fichier = :fichier;');
+$statement->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
+$result = $statement->execute();
+$nb_marqueur = $i = 0;
+while ($row = $result->fetchArray()) {
+  $i = $i +1;
+  $nb_marqueur = $i;
+  $nom_marqueur[$nb_marqueur] = $row['nom_marqueur'];
+  $couleur[$nb_marqueur] = $row['couleur'];
+  $latitude[$nb_marqueur] = $row['latitude'];
+  $longitude[$nb_marqueur] = $row['longitude'];
+  $descri[$nb_marqueur] = $row['descri'];
+  // On construit le tableau des marqueurs javascript
+  $jmarqueur.="a.push({\n";
+  $jmarqueur.="\t id       : 'Marker".$nb_marqueur."',\n";
+  $jmarqueur.="\t tooltip  : {\n";
+  $jmarqueur.="\t\t content : '".$row['nom_marqueur']."',\n";
+  $jmarqueur.="\t\t position: 'bottom right',\n";
+  $jmarqueur.="\t },\n";
+  $jmarqueur.="\t content  : document.getElementById('pin-".$nb_marqueur."').innerHTML,\n";
+  $jmarqueur.="\t latitude : ".$row['latitude'].",\n";
+  $jmarqueur.="\t longitude: ".$row['longitude'].",\n";
+  $jmarqueur.="\t image    : 'example/assets/pin-".$row['couleur'].".png',\n";
+  $jmarqueur.="\t width    : 32,\n";
+  $jmarqueur.="\t height   : 32,\n";
+  $jmarqueur.="\t anchor   : 'bottom center',\n";
+  $jmarqueur.="});\n";
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,19 +102,20 @@ if (file_exists($fic_complement)){
 
   <link rel="stylesheet" href="dist/photo-sphere-viewer.css">
   <link rel="stylesheet" href="dist/plugins/markers.css">
+  <link rel="stylesheet" href="assets/css/form.css">
 
   <style>
     html, body {
       width: 100%;
       height: 100%;
-      /*overflow: hidden; */
+      overflow: hidden;
       margin: 0;
       padding: 0;
     }
 
     #photosphere {
-      width: 60%;
-      height: 60%;
+      width: 70%;
+      height: 100%;
     }
 
     .psv-button.custom-button {
@@ -101,37 +135,127 @@ if (file_exists($fic_complement)){
   </style>
 </head>
 <body>
- <div style="float:right;padding-left:10px;padding-right:10px;">
+<div id="photosphere"></div>
+<div id="DivMyForm">
+  <form id="MyForm" action="pano-xml.php" method="post" class="form-example">
+    <input id="p" name="p" type="hidden" value="<?php echo $quelfic; ?>">
+    <input id="v" name="v" type="hidden" value="ok">
+    <fieldset>
+      <input placeholder="Titre (liste)" type="text" name="titre" id="titre" value="<?php echo $titre; ?>">
+    </fieldset>
+    <fieldset>
+      <textarea placeholder="Info complèmentaire (liste)...." name="legende"><?php echo $legende; ?></textarea>
+    </fieldset>
+    <?php
+    for ($i = 1; $i <= $nb_marqueur; $i++) {
+      echo "<h4>Marqueur n°".$i."</h4>";
+    ?>
+    <fieldset>
+      <input placeholder="Titre du marqueur (Etiquette bulle)" type="text" name="formu[<?php echo $i; ?>][nom_marqueur]" id="nom_marqueur<?php echo $i; ?>"  value="<?php echo $nom_marqueur[$i]; ?>">
+    </fieldset>
+    <div class="gps">
+      <div class="gauche">
+        <fieldset>
+          <input placeholder="Latitude" type="text" class="gpsCoord" name="formu[<?php echo $i; ?>][latitude]" id="latitude_<?php echo $i; ?>" value="<?php echo $latitude[$i]; ?>">
+        </fieldset>
+      </div>
+      <div class="droite">
+        <fieldset>
+          <input placeholder="Longitude" type="text"  class="gpsCoord" name="formu[<?php echo $i; ?>][longitude]"    id="longitude_<?php echo $i; ?>" value="<?php echo $longitude[$i]; ?>">
+        </fieldset>
+      </div>
+    </div>
+    <fieldset>
+      <select name="formu[<?php echo $i; ?>][couleur]"" id="couleur_<?php echo $i; ?>">
+                                          <option value="red"  <?php if ($couleur[$i]=="red") echo "SELECTED"; ?>>Rouge</option>
+                                          <option value="blue" <?php if ($couleur[$i]=="blue") echo "SELECTED"; ?>>Bleu</option>
+      </select>
+    </fieldset>
+    <fieldset>
+      <textarea placeholder="Toutes les infos complèmentaires du marqueur...." name="formu[<?php echo $i; ?>][descri]" id="descri_<?php echo $i; ?>"><?php echo $descri[$i]; ?></textarea>
+    </fieldset>
+    <?php
+    }
+    ?>
+    <h4>Nouveau Marqueur</h4>
+    <fieldset>
+      <input placeholder="Titre du marqueur (Etiquette bulle)" type="text" name="formu[<?php echo $i; ?>][nom_marqueur]" id="nom_marqueur_<?php echo $i; ?>"  value="">
+    </fieldset>
+    <?php
+    $name_latitude = "formu[".$i."][latitude]";
+    $name_longitude = "formu[".$i."][longitude]";
+    ?>
+    <div class="gps">
+      <div class="gauche">
+        <fieldset>
+          <input placeholder="Latitude" type="text" class="gpsCoord" name="<?php echo $name_latitude; ?>" id="<?php echo $name_latitude; ?>" value="">
+        </fieldset>
+      </div>
+      <div class="droite">
+        <fieldset>
+          <input placeholder="Longitude" type="text"  class="gpsCoord" name="<?php echo $name_longitude; ?>"    id="<?php echo $name_longitude; ?>" value="">
+        </fieldset>
+      </div>
+    </div>
+    <fieldset>
+      <select name="formu[<?php echo $i; ?>][couleur]" id="couleur_<?php echo $i; ?>">
+                                          <option value="red">Rouge</option>
+                                          <option value="blue">Bleu</option>
+      </select>
+    </fieldset>
+    <fieldset>
+      <textarea placeholder="Toutes les infos complèmentaires du marqueur...." name="formu[<?php echo $i; ?>][descri]" id="descri_<?php echo $i; ?>"></textarea>
+    </fieldset>
+    <fieldset>
+      <button name="Sauvegarder" type="submit" id="MyForm-submit" data-submit="...Sending">Sauvegarder</button>
+    </fieldset>
+  </form>
 
-    <form action="pano-xml.php" method="post" class="form-example"> 
+<!--
+
+  <form action="pano-xml.php" method="post" class="form-example"> 
     <input type="submit" name="submit" id="submit" value="Valider" /> <a href="index.php?a=admin">Retour</a><br />
     <input id="p" name="p" type="hidden" value="<?php echo $quelfic; ?>">
     <input id="v" name="v" type="hidden" value="ok">
-    <hr />
-    <label for="name">Latitude, longitude (pour copier coller): </label><br />
-    <input type="text" name="latitudetmp" id="latitudetmp" size="50"><br />
-    <hr />
     <label for="titre">Titre (Pour la liste des sphères</label><br />
-    <input type="text" name="titre" id="titre" size="50" maxlength="250" value="<?php echo $titre; ?>" /><br />  
+    <input type="text" name="titre" id="titre" size="50" maxlength="250" value="<?php echo $titre; ?>" /><br />
     <label for="id_Legende">Legende (Pour la liste des sphères):</label><br />
-    <textarea name="legende" id="legende" rows="5" cols="50" wrap="soft"><?php echo $legende; ?></textarea><br />
+    <textarea name="legende" id="legende" rows="3" cols="50" wrap="soft"><?php echo $legende; ?></textarea><br />
     <hr />
-    <h2>XML Marqueurs</h2>
-    <textarea name="contenu" id="contenu" rows="15" cols="50" wrap="soft"><?php echo $contenu; ?></textarea><br />
-<xmp>
-<marker>
-<titre>...</titre>
-<couleur>red ou blue</couleur>
-<latitude>...</latitude>
-<longitude>...</longitude>
-<descmarqueur><![CDATA[...]]></descmarqueur>
-</marker>
-</xmp>
+    <?php
+    for ($i = 1; $i <= $nb_marqueur; $i++) {
+      echo "<h2>Marqueurs".$i."</h2>";
+      ?>
+      <label for="titre">Titre Marqueur</label><input type="text" name="formu[<?php echo $i; ?>][nom_marqueur]" id="nom_marqueur<?php echo $i; ?>" size="50" maxlength="250" value="<?php echo $nom_marqueur[$i]; ?>" /><br />
+      <label for="titre">Couleur</label><select name="formu[<?php echo $i; ?>][couleur]"" id="couleur_<?php echo $i; ?>">
+                                          <option value="red"  <?php if ($couleur[$i]=="red") echo "SELECTED"; ?>>Rouge</option>
+                                          <option value="blue" <?php if ($couleur[$i]=="blue") echo "SELECTED"; ?>>Bleu</option>
+                                        </select><br />
+      <label for="titre">Latitude :</label><input type="text" name="formu[<?php echo $i; ?>][latitude]"     id="latitude_<?php echo $i; ?>" size="10" maxlength="250" value="<?php echo $latitude[$i]; ?>" /><br />
+      <label for="titre">Longitude :</label><input type="text" name="formu[<?php echo $i; ?>][longitude]"    id="longitude_<?php echo $i; ?>" size="10"longitudeength="250" value="<?php echo $longitude[$i]; ?>" /><br />
+      <label for="titre">Description</label><textarea name="formu[<?php echo $i; ?>][descri]"           id="descri_<?php echo $i; ?>" rows="15" cols="50" wrap="soft"><?php echo $descri[$i]; ?></textarea><br />
+    <?  
+    }
+    //$i = $i +1;
+    echo "<h2>Marqueurs ".$i."</h2>";
+    // On presente pour un marqueur supplémentaire
+    ?>
+    <label for="titre">Titre Marqueur</label><input type="text" name="formu[<?php echo $i; ?>][nom_marqueur]" id="nom_marqueur_<?php echo $i; ?>" size="50" maxlength="250" value="" /><br />
+    <label for="titre">Couleur</label><select name="formu[<?php echo $i; ?>][couleur]"" id="couleur_<?php echo $i; ?>">
+                                          <option value="red">Rouge</option>
+                                          <option value="blue">Bleu</option>
+                                        </select><br />
+    <?php
+    $name_latitude = "formu[".$i."][latitude]";
+    $name_longitude = "formu[".$i."][longitude]";
+    ?>
+    <label for="titre">Latitude</label><input type="text" name="<?php echo $name_latitude; ?>"     id="<?php echo $name_latitude; ?>" size="50" maxlength="250" value="" /><br />
+    <label for="titre">Longitude</label><input type="text" name="<?php echo $name_longitude; ?>"    id="<?php echo $name_longitude; ?>" size="50"longitudeength="250" value="" /><br />
+    <label for="titre">Description</label><textarea name="formu[<?php echo $i; ?>][descri]"           id="descri_<?php echo $i; ?>" rows="15" cols="50" wrap="soft"></textarea><br />
     <input type="submit" name="submit" id="submit" value="Valider" />
-   </form>
-  
+  </form>
+  -->
 </div> 
-<div id="photosphere"></div>
 <script src="node_modules/three/build/three.js"></script>
 <script src="node_modules/promise-polyfill/dist/polyfill.js"></script>
 <script src="node_modules/uevent/browser.js"></script>
@@ -143,9 +267,9 @@ if (file_exists($fic_complement)){
 
 <!-- text used for the marker description -->
 <?php
-for($i = 0; $i < $p_cnt; $i++) {
-  echo "<script type=\"text/template\" id=\"pin-".$i."\">\n";
-  echo $xml->marker[$i]->descmarqueur."\n";
+for($inner = 1; $inner <= $nb_marqueur; $inner++) {
+  echo "<script type=\"text/template\" id=\"pin-".$inner."\">\n";
+  echo $descri[$inner]."\n";
   echo "</script>\n";
 }
 ?>
@@ -201,14 +325,16 @@ for($i = 0; $i < $p_cnt; $i++) {
         },
       });
       console.log('latitude:',data.latitude,'longitude:',data.longitude);
-      document.getElementById('latitudetmp').value = "<latitude>" + data.latitude + "</latitude><longitude>" + data.longitude + "</longitude>"
-      //document.getElementById('latitudetmp').value = 10;
+      document.getElementById('<?php echo $name_latitude; ?>').value = data.latitude;
+      document.getElementById('<?php echo $name_longitude; ?>').value = data.longitude;
+      //document.getElementById('myform').focus();
+      document.getElementById('photosphere').disabled = true;
     }
   });
 
   markers.on('select-marker', function (e, marker, data) {
     console.log('select', marker.id);
-    console.log('latitude:',data.latitude,'longitude:',data.longitude);
+    console.log('latitude:',marker.latitude,'longitude:',marker.longitude);
     if (marker.data && marker.data.deletable) {
       if (data.dblclick) {
         markers.removeMarker(marker);
