@@ -12,15 +12,35 @@ $db = new SQLite3($mabdd);
 // $SqlString = "drop table if exists lespanos_details"; 
 // $db->exec($SqlString);
 
+$tableCheck =$db->query("SELECT name FROM sqlite_master WHERE name='lespanos'");
+if ($tableCheck->fetchArray() === false){
+    // La table existe pas creation
+    $SqlString = "CREATE TABLE [lespanos] (
+	                [fichier] VARCHAR(500)  NULL,
+	                [titre] VARCHAR(500)  NULL,
+	                [legende] TEXT  NULL,
+	                [hashfic] VARCHAR(100)  NULL
+	            );";
+    $db->exec($SqlString);
+    $SqlString = "CREATE INDEX [IDX_LESPANOS_fichier] ON [lespanos]([fichier]  ASC );";
+    $db->exec($SqlString);
+}
 
-
-$SqlString = "CREATE TABLE IF NOT EXISTS lespanos
-    ( fichier TEXT, titre TEXT, legende TEXT, hashfic TEXT)"; 
-$db->exec($SqlString);
-
-$SqlString ="CREATE TABLE IF NOT EXISTS lespanos_details
-    (fichier TEXT, hashfic TEXT, nom_marqueur TEXT, couleur TEXT, latitude TEXT, longitude TEXT, descri TEXT)";
-$db->exec($SqlString);
+$tableCheck =$db->query("SELECT name FROM sqlite_master WHERE name='lespanos_details'");
+if ($tableCheck->fetchArray() === false){
+    $SqlString = "CREATE TABLE [lespanos_details] (
+        [fichier] VARCHAR(500)  NULL,
+        [hashfic] VARCHAR(100)  NULL,
+        [nom_marqueur] VARCHAR(100)  NULL,
+        [couleur] VARCHAR(10)  NULL,
+        [latitude] VARCHAR(20)  NULL,
+        [longitude] VARCHAR(20)  NULL,
+        [descri] TEXT  NULL
+        );";
+    $db->exec($SqlString);
+    $SqlString = "CREATE INDEX [IDX_LESPANOS_DETAILS_hashfic] ON [lespanos_details]([hashfic]  ASC);";
+    $db->exec($SqlString);
+}
 
 // Run the recursive function 
 
