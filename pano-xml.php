@@ -12,16 +12,18 @@ if (!isset($quelfic)) $quelfic = stripSlashes($_GET["p"]);
 // Si nous arrivons du formulaire
 if (isset($_POST["v"])){
   $quelfic = stripSlashes($_POST["p"]);
-  //echo "UPDATE lespanos SET titre = ".$_POST['titre']." , legende = ".$_POST['legende']." WHERE fichier = ".$quelfic.";";
-  $stmt = $db->prepare('UPDATE lespanos SET titre = :titre , legende = :legende WHERE fichier = :fichier');
+  // ON update avec la clef fichier ce qui permet d'avoir un titre et une legende differente en fonction
+  // de l'endroit ou se trouve le fichier par contre les marqueurs eux seront communs
+  $stmt = $db->prepare('UPDATE lespanos SET titre = :titre , legende = :legende, hashfic = :hashfic WHERE fichier = :fichier');
   $stmt->bindValue(':titre', rtrim($_POST['titre']), SQLITE3_TEXT);
   $stmt->bindValue(':legende', rtrim($_POST['legende']), SQLITE3_TEXT);
+  $stmt->bindValue(':hashfic', rtrim($_POST['hashfic']), SQLITE3_TEXT);
   $stmt->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
   $result = $stmt->execute();
 
   // On commence par effacer tous les marqueurs de cette sphère
-  $stmt = $db->prepare('DELETE FROM lespanos_details WHERE fichier = :fichier');
-  $stmt->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
+  $stmt = $db->prepare('DELETE FROM lespanos_details WHERE hashfic = :hashfic');
+  $stmt->bindValue(':hashfic', $_POST["v"], SQLITE3_TEXT);
   $result = $stmt->execute();
 
   // On insere maintenant les marqueurs du formulaire
@@ -32,8 +34,9 @@ if (isset($_POST["v"])){
   //echo "<br />";
   for ($a = 1; $a <= count($_POST['formu']); $a++){
     if (rtrim($_POST['formu'][$a]['nom_marqueur'])!=""){   //On insert que si un titre de marqueur est renseigné 
-      $statement = $db->prepare('INSERT INTO lespanos_details (fichier, nom_marqueur, couleur, latitude, longitude, descri) VALUES (:fichier, :nom_marqueur, :couleur, :latitude, :longitude, :descri);');
+      $statement = $db->prepare('INSERT INTO lespanos_details (fichier, hashfic, nom_marqueur, couleur, latitude, longitude, descri) VALUES (:fichier, :hashfic, :nom_marqueur, :couleur, :latitude, :longitude, :descri);');
 	    $statement->bindValue(':fichier', $quelfic);
+      $statement->bindValue(':hashfic', $_POST['hashfic']);
       $statement->bindValue(':nom_marqueur', $_POST['formu'][$a]['nom_marqueur']);
       $statement->bindValue(':couleur', $_POST['formu'][$a]['couleur']);
       $statement->bindValue(':latitude', $_POST['formu'][$a]['latitude']);
@@ -52,18 +55,30 @@ if (isset($_POST["v"])){
 
 // On recupere les elements eventuel pour les marqueur
 //echo "<br />SELECT titre,legende FROM lespanos WHERE fichier = ".$quelfic." LIMIT 1";
-$statement = $db->prepare('SELECT titre,legende FROM lespanos WHERE fichier = :fichier LIMIT 1;');
+$statement = $db->prepare('SELECT titre,legende,hashfic FROM lespanos WHERE fichier = :fichier LIMIT 1;');
 $statement->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
 $result = $statement->execute();
-$titre=$legende="";
+$hashfic=$titre=$legende="";
 while ($row = $result->fetchArray()) {
   $titre = $row['titre'];
   $legende = $row['legende'];
+  $hashfic = $row['hashfic'];
+}
+
+// On calcul le Hash du fichier pour avoir les mêmes infos marqueur pour un fichier
+// La legende peut être differentes mais pas les infos marqueurs
+if (rtrim($hashfic) == ""){
+  $hashfic = hash_file('md5', $quelfic, false);
+  // On mémorise le $hashfic c'est lui qui fera la liaison entre la table lespanos et lespanos_details
+  $stmt = $db->prepare('UPDATE lespanos SET hashfic = :hashfic WHERE fichier = :fichier');
+  $stmt->bindValue(':hashfic', $hashfic, SQLITE3_TEXT);
+  $stmt->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
+  $result = $stmt->execute();
 }
 
 // On memorise les marqueurs pour le formulaire et aussi pour l'affichage
-$statement = $db->prepare('SELECT * FROM lespanos_details WHERE fichier = :fichier;');
-$statement->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
+$statement = $db->prepare('SELECT nom_marqueur,couleur,latitude,longitude,descri FROM lespanos_details WHERE hashfic = :hashfic;');
+$statement->bindValue(':hashfic', $hashfic, SQLITE3_TEXT);
 $result = $statement->execute();
 $nb_marqueur = $i = 0;
 while ($row = $result->fetchArray()) {
@@ -139,6 +154,7 @@ while ($row = $result->fetchArray()) {
 <div id="DivMyForm">
   <form id="MyForm" action="pano-xml.php" method="post" class="form-example">
     <input id="p" name="p" type="hidden" value="<?php echo $quelfic; ?>">
+    <input id="hashfic" name="hashfic" type="hidden" value="<?php echo $hashfic; ?>">
     <input id="v" name="v" type="hidden" value="ok">
     <fieldset>
       <input placeholder="Titre (liste)" type="text" name="titre" id="titre" value="<?php echo $titre; ?>">

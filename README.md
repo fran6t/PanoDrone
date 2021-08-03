@@ -29,3 +29,7 @@ Améliorer la création d'un marqueur
 
 ## Démo ##
 [Démonstration](http://www.wse.fr/PanoDrone/)
+
+__Change log__:
+02/08/2021 abandon .xml pour memo info marqueurs
+03/08/2021 ajout hash fichier qui ont des marqueurs cela permet ainsi de reconnaitre un fichier peu importe son nom et son emplacement ils pourront avoir un titre et une légende respectifs mais auront les mêmes marqueurs.

@@ -15,11 +15,11 @@ $db = new SQLite3($mabdd);
 
 
 $SqlString = "CREATE TABLE IF NOT EXISTS lespanos
-    ( fichier TEXT, titre TEXT, legende TEXT)"; 
+    ( fichier TEXT, titre TEXT, legende TEXT, hashfic TEXT)"; 
 $db->exec($SqlString);
 
 $SqlString ="CREATE TABLE IF NOT EXISTS lespanos_details
-    (fichier TEXT, nom_marqueur TEXT, couleur TEXT, latitude TEXT, longitude TEXT, descri TEXT)";
+    (fichier TEXT, hashfic TEXT, nom_marqueur TEXT, couleur TEXT, latitude TEXT, longitude TEXT, descri TEXT)";
 $db->exec($SqlString);
 
 // Run the recursive function 

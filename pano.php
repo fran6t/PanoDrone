@@ -17,19 +17,30 @@ if (!file_exists($quelfic)){
 }
 
 $titre=$legende=$titrerouge=$latituderouge=$descmarqueurrouge=$titrebleu=$latitudebleu=$descmarqueurbleu="";
-$statement = $db->prepare('SELECT titre,legende FROM lespanos WHERE fichier = :fichier LIMIT 1;');
+$statement = $db->prepare('SELECT hashfic,titre,legende FROM lespanos WHERE fichier = :fichier LIMIT 1;');
 $statement->bindValue(':fichier', $quelfic);
 $result = $statement->execute();
 $row=$result->fetchArray(SQLITE3_ASSOC);
 
+$hashfic=$titre=$legende="";
 while ($row = $result->fetchArray()) {
   $titre = $row['titre'];
   $legende = $row['legende'];
+  $hashfic = $row['hashfic'];
 }
 
-// On memorise les marqueurs pour le formulaire et aussi pour l'affichage
-$statement = $db->prepare('SELECT * FROM lespanos_details WHERE fichier = :fichier;');
-$statement->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
+if (rtrim($hashfic) == ""){
+  $hashfic = hash_file('md5', $quelfic, false);
+  // On mémorise le $hashfic c'est lui qui fera la liaison entre la table lespanos et lespanos_details
+  $stmt = $db->prepare('UPDATE lespanos SET hashfic = :hashfic WHERE fichier = :fichier');
+  $stmt->bindValue(':hashfic', $hashfic, SQLITE3_TEXT);
+  $stmt->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
+  $result = $stmt->execute();
+}
+
+// On recupere les marqueurs
+$statement = $db->prepare('SELECT * FROM lespanos_details WHERE hashfic = :hashfic;');
+$statement->bindValue(':hashfic', $hashfic, SQLITE3_TEXT);
 $result = $statement->execute();
 $nb_marqueur = $i = 0;
 while ($row = $result->fetchArray()) {
