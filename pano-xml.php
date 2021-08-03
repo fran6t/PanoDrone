@@ -21,17 +21,20 @@ if (isset($_POST["v"])){
   $stmt->bindValue(':fichier', $quelfic, SQLITE3_TEXT);
   $result = $stmt->execute();
 
+
   // On commence par effacer tous les marqueurs de cette sphère
   $stmt = $db->prepare('DELETE FROM lespanos_details WHERE hashfic = :hashfic');
-  $stmt->bindValue(':hashfic', $_POST["v"], SQLITE3_TEXT);
+  $stmt->bindValue(':hashfic', $_POST["hashfic"], SQLITE3_TEXT);
   $result = $stmt->execute();
+
 
   // On insere maintenant les marqueurs du formulaire
   // On calcul combien de marqueur sont dans le formulaire
   //echo "<br />Nombre de formulaire = ".count($_POST['formu']);
   //echo "<br />";
-  //var_dump($_POST['formu']);
-  //echo "<br />";
+  // var_dump($_POST['formu']);
+  // echo "<br />Nombre marqueur dans formulaire".count($_POST['formu']);
+
   for ($a = 1; $a <= count($_POST['formu']); $a++){
     if (rtrim($_POST['formu'][$a]['nom_marqueur'])!=""){   //On insert que si un titre de marqueur est renseigné 
       $statement = $db->prepare('INSERT INTO lespanos_details (fichier, hashfic, nom_marqueur, couleur, latitude, longitude, descri) VALUES (:fichier, :hashfic, :nom_marqueur, :couleur, :latitude, :longitude, :descri);');
