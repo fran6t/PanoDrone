@@ -154,7 +154,11 @@ while ($row = $result->fetchArray()) {
 <body>
 <div id="photosphere"></div>
 <div id="DivMyForm">
-  <form id="MyForm" action="pano-xml.php" method="post" class="form-example">
+  <ul>
+    <li><a href="gest.php">Retour liste</a></li>
+    <li><a href="index.php">Quitter</a></li>
+  </ul>
+  <form id="MyForm" action="gest-form.php" method="post" class="form-example">
     <input id="p" name="p" type="hidden" value="<?php echo $quelfic; ?>">
     <input id="hashfic" name="hashfic" type="hidden" value="<?php echo $hashfic; ?>">
     <input id="v" name="v" type="hidden" value="ok">
