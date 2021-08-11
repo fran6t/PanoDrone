@@ -1,5 +1,5 @@
 <?php
-$dir = "Spheres";							// Important dans scan.php sert au debut et a la fin pour le json
+
 $mabdd = "pano.db";              		// Le nom de la bdd
 $db = new SQLite3($mabdd);
 

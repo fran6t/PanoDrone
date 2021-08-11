@@ -1,4 +1,5 @@
 <?php
+include('inc-config.php');
 include('inc-lib.php');
 
 if (isset($_POST['v'])){

@@ -1,5 +1,6 @@
 <?php
 
+include('inc-config.php');
 include('inc-lib.php');
 
 // La fonction est maintenant dans inc-lib.php car utilisée aussi dans gestion.php en plus de assets/js/script.js 
