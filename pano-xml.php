@@ -1,7 +1,6 @@
 <?php
 
-$mabdd = "pano.db";
-$db = new SQLite3($mabdd);
+include('inc-lib.php');
 
 $p_cnt = 0;     //Nombre de marqueurs
 $jmarqueur="";  //A peupler pour javascript

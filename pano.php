@@ -1,7 +1,6 @@
 <?php
 
-$mabdd = "pano.db";
-$db = new SQLite3($mabdd);
+include('inc-lib.php');
 
 if (!isset($_GET["p"])){
 	echo "Parametres manquants !!!!";
