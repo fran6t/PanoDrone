@@ -31,9 +31,9 @@
 	</div>
 
 	<footer>
-        <div class="namefile">Crédits: <a href="http://tutorialzine.com/2014/09/cute-file-browser-jquery-ajax-php/">Cute File Browser with jQuery, AJAX and PHP</a> & <a href="https://photo-sphere-viewer.js.org/">Photo Sphere Viewer</div></a>
+        <div class="namefile">Crédits: <a href="http://tutorialzine.com/2014/09/cute-file-browser-jquery-ajax-php/">Cute File Browser with jQuery, AJAX and PHP</a> & <a href="https://photo-sphere-viewer.js.org/">Photo Sphere Viewer</a> & <a href="https://tinyfilemanager.github.io/">TinyFileManager</a><br />Administration: <a href="gest.php">ici</a></div>
         <div id="tzine-actions"></div>
-        <span class="close"></span>
+        <!-- <span class="close"></span> -->
     </footer>
 
 	<!-- Include our script files -->

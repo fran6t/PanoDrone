@@ -7,7 +7,7 @@ Pour ce faire, deux logiciels sont utilisés :
 
 - [Photo Sphères Viewer](https://photo-sphere-viewer.js.org/) de Damien Sorel pour l'affichage et le marquage de point d'intérêt
 - [Cute File Browser](https://tutorialzine.com/2014/09/cute-file-browser-jquery-ajax-php) de Nick Anastasov pour parcourir les photos
-- [TinyFileManager](https://tinyfilemanager.github.io) de CCP Programmers pour gérer les fichiers devant être presenté
+- [TinyFileManager](https://tinyfilemanager.github.io) de CCP Programmers pour gérer les fichiers devant être presentés
 
 ## Principe de fonctionnement : 
 
@@ -32,10 +32,10 @@ __Reste à faire__:
 Améliorer la création d'un marqueur  
 
 ## Démo ##
-[Démonstration](http://www.wse.fr/PanoDrone/)
+[Démonstration](http://www.wse.fr/PanoDrone/) Juste côté affichage l'administration est laissée protégée
 
 __Change log__:
-
+- 12/08/2021 ajout lien dans panel en bas pur acceder à l'administration
 - 11/08/2021 ajout de TinyFileManager pour gérer les fichiers à presenter.
 - 03/08/2021 ajout hash fichier qui ont des marqueurs cela permet ainsi de reconnaitre un fichier peu importe son nom et son emplacement ils pourront avoir un titre et une légende respectifs mais auront les mêmes marqueurs.
 - 02/08/2021 abandon .xml pour memo info marqueurs.
