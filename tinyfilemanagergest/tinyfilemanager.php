@@ -1,6 +1,6 @@
 <?php
 //Default Configuration
-$CONFIG = '{"lang":"fr","error_reporting":false,"show_hidden":false,"hide_Cols":false,"calc_folder":false,"theme":"light"}';
+$CONFIG = '{"lang":"en","error_reporting":false,"show_hidden":false,"hide_Cols":false,"calc_folder":false,"theme":"light"}';
 
 /**
  * H3K | Tiny File Manager V2.4.6
@@ -127,7 +127,7 @@ $ip_blacklist = array(
 );
 
 // if User has the customized config file, try to use it to override the default config above
-$config_file = '../inc-config.php';
+$config_file = __DIR__.'/config.php';
 if (is_readable($config_file)) {
     @include($config_file);
 }

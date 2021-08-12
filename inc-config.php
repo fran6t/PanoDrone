@@ -30,5 +30,4 @@ $root_path = $_SERVER['DOCUMENT_ROOT'].'/'.$root_complement;
 // Root url for links in file manager.Relative to $http_host. Variants: '', 'path/to/subfolder'
 // Will not working if $root_path will be outside of server document root
 $root_url = $root_complement;
-
 ?>

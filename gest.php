@@ -2,6 +2,19 @@
 include('inc-config.php');
 include('inc-lib.php');
 
+// On va se servir de la connection de tinyfilemanager pour savoir si on peu acceder
+// Attention tous ceux qui sont identifiés correctement dans tinyfilemanger accederons 
+if ( !defined( 'FM_SESSION_ID')) {
+    define('FM_SESSION_ID', 'filemanager');
+}
+session_name(FM_SESSION_ID );	// On pointe la session de tinyfilemanager
+session_start();
+if (!isset($_SESSION[FM_SESSION_ID]['logged'])){
+	// On redirige vers tinyfilemanager pour se connecter
+	header('Location: tinyfilemanagergest/tinyfilemanager.php');
+	exit;
+}
+
 if (isset($_POST['v'])){
 	for ($a = 1; $a <= $_POST['cpt']; $a++){
 		if ($_POST['C_'.$a]=="Ok"){
