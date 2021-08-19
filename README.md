@@ -1,3 +1,8 @@
+
+
+Projet obsolette fait maintenant partie du projet [ExhibMyDrone]https://github.com/fran6t/ExhibMyDrone
+
+
 # PanoDrone
 Visualisation sphères et placement de points d'intérets
 
